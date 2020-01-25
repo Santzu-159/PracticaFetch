@@ -1,32 +1,48 @@
-window.addEventListener('load',()=>{
+window.addEventListener('load',() =>{
     let long;
     let lat;
     let temperatureDescription = document.querySelector(
-        '.temperature-description'
+        ".temperature-description"
         );
         let temperatureDegree = document.querySelector('.temperature-degree');
         let locationTimezone = document.querySelector('.location-timezone');
-
+        let temperatureSection = document.querySelector('.temperature');
+        const temperatureSpan = document.querySelector('.temperature span');
 
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(position =>{
-            long=position.coords.longitude;
-            lat=position.coords.latitude;
-
-            const api =`https://api.darksky.net/forecast/ae2c920ac0a6cabea465422f287d1953/${lat},${long}`;
+            long = position.coords.longitude;
+            lat = position.coords.latitude;
+            
+            const proxy = "https://cors-anywhere.herokuapp.com/";
+            const api = `${proxy}https://api.darksky.net/forecast/963daba31bd95a49dbde7d5aabfdffd7/${lat},${long}`;
 
             fetch(api)
-        .then(response =>{
-            return response.json();
-        })
-        .then(data =>{
-            const{temperatire,summary,icon}=data.currently;
-            //Set DOM Elements from the API
-            temperatureDegree.textContent = temperature;
-            temperatureDescription.textContent = summary;
-            locationTimezone.textContent = data.timezone;
-            //Set Icon
-            setIcons(icon,document.querySelector(".icon"))
+            .then(response =>{
+                return response.json();
+            })
+            .then(data =>{
+                const { temperature, summary, icon } = data.currently;
+                //Set DOM Elements from the API
+                temperatureDegree.textContent = temperature;
+                temperatureDescription.textContent = summary;
+                locationTimezone.textContent = data.timezone;
+                //Formula for Celsius
+                let celsius = (temperature - 32) * (5 / 9 );
+
+                //Set Icon
+                setIcons(icon, document.querySelector(".icon"));
+
+                //Change temperature to Celsius/Farenheit
+                temperatureSection.addEventListener("click",()=>{
+                    if(temperatureSpan.textContent === "F"){
+                        temperatureSpan.textContent = "C"; 
+                        temperatureDegree.textContent = Math.floor(celsius);
+                    }else{
+                        temperatureSpan.textContent = "F"; 
+                        temperatureDegree.textContent = temperature;
+                    }
+                });
             });
         });
     
